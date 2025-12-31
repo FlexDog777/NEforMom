@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<!-- Обязательный тег для мобильных -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>С Новым годом, любимая мама! ❤️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary-color: #d63384;
+    --bg-gradient: linear-gradient(135deg, #fceaf0 0%, #f9d1d1 100%);
+    --page-bg: #ffffff;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    background: var(--bg-gradient);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+
+.snow {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Оптимизация контейнера книги */
+.book {
+    position: relative;
+    width: 90vw;
+    max-width: 350px;
+    height: 70vh;
+    max-height: 500px;
+    perspective: 1500px;
+}
+
+.page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform-origin: left;
+    transform-style: preserve-3d;
+    transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    z-index: 5;
+}
+
+.front, .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    padding: 25px; /* Уменьшил отступы для мобильных */
+    border-radius: 10px 20px 20px 10px;
+    box-shadow: inset 3px 0px 20px rgba(0,0,0,0.1), 10px 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--page-bg);
+    overflow: hidden;
+}
+
+.back {
+    transform: rotateY(180deg);
+    background: #fffafa;
+}
+
+h1 {
+    font-family: 'Caveat', cursive;
+    color: var(--primary-color);
+    font-size: 28px; /* Чуть меньше для мобильных */
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.heart {
+    font-size: 40px;
+    color: #e91e63;
+    animation: pulse 1.5s infinite;
+    margin: 10px 0;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+button {
+    margin-top: 20px;
+    padding: 12px 20px;
+    border: 2px solid var(--primary-color);
+    background: transparent;
+    color: var(--primary-color);
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.flipped {
+    transform: rotateY(-180deg);
+    z-index: 10 !important;
+}
+
+/* Стили для планшетов и больших экранов */
+@media (min-width: 768px) {
+    .book { max-width: 400px; max-height: 550px; }
+    h1 { font-size: 38px; }
+    p { font-size: 18px; }
+    .front, .back { padding: 40px; }
+}
+
+#p1 { z-index: 5; }
+#p2 { z-index: 4; }
+#p3 { z-index: 3; }
+#p4 { z-index: 2; }
+#p5 { z-index: 1; }
+
+#timer {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    background: #ffeef2;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.music-control {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    font-size: 20px;
+}
+</style>
+</head>
+<body>
+
+<canvas class="snow" id="snowCanvas"></canvas>
+
+<audio id="bgMusic" loop>
+    <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<button class="music-control" onclick="toggleMusic()" id="musicBtn">🔇</button>
+
+<div class="book">
+    <div class="page" id="p1">
+        <div class="front">
+            <h1>Маме <br>с любовью...</h1>
+            <div class="heart">❤️</div>
+            <p id="lockMessage">Нажми на кнопку,<br>чтобы открыть подарок</p>
+            <button onclick="flip(1)">Открыть ➜</button>
+        </div>
+        <div class="back">
+            <h1>Для тебя...</h1>
+            <p>Я закодил эту открытку специально для тебя, чтобы передать всё своё тепло.</p>
+        </div>
+    </div>
+
+    <div class="page" id="p2">
+        <div class="front">
+            <h1>Моя опора</h1>
+            <p>Спасибо за твою доброту. Ты всегда веришь в меня!</p>
+            <button onclick="flip(2)">Дальше ➜</button>
+        </div>
+        <div class="back">
+            <h1>Твое тепло</h1>
+            <p>Пусть в нашем доме всегда будет уютно и радостно.</p>
+        </div>
+    </div>
+
+    <div class="page" id="p3">
+        <div class="front">
+            <h1>Желаю тебе</h1>
+            <p>Улыбок, крепкого здоровья и только добрых новостей в новом году!</p>
+            <button onclick="flip(3)">Дальше ➜</button>
+        </div>
+        <div class="back">
+            <h1>Сияй!</h1>
+            <p>Пусть исполнятся твои самые заветные мечты.</p>
+        </div>
+    </div>
+
+    <div class="page" id="p4">
+        <div class="front">
+            <h1>Почти пришло...</h1>
+            <p>Загадай желание прямо сейчас!</p>
+            <button onclick="flip(4)">Узнать время ➜</button>
+        </div>
+        <div class="back">
+            <h1>Люблю тебя!</h1>
+            <p>Я всегда рядом. С наступающим!</p>
+        </div>
+    </div>
+
+    <div class="page" id="p5">
+        <div class="front">
+            <h1>До Нового года:</h1>
+            <div id="timer">...</div>
+            <p style="margin-top: 15px; font-size: 14px;">Твой сын ❤️</p>
+        </div>
+        <div class="back"></div>
+    </div>
+</div>
+
+<script>
+const music = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicBtn');
+let isMusicPlaying = false;
+
+function flip(id) {
+    const now = new Date();
+    const unlockDate = new Date(2026, 0, 1, 0, 0, 0);
+
+    if (now < unlockDate && id === 1) {
+        alert("Терпение, мамуль! ❤️ Подарок откроется ровно в полночь!");
+        return;
+    }
+
+    const page = document.getElementById('p' + id);
+    page.classList.add('flipped');
+    
+    if (!isMusicPlaying) startMusic();
+
+    setTimeout(() => { page.style.zIndex = id; }, 500);
+}
+
+function startMusic() {
+    music.play().then(() => {
+        isMusicPlaying = true;
+        musicBtn.innerText = '🔊';
+    }).catch(e => console.log("Музыка ждет клика"));
+}
+
+function toggleMusic() {
+    if (isMusicPlaying) { music.pause(); musicBtn.innerText = '🔇'; }
+    else { music.play(); musicBtn.innerText = '🔊'; }
+    isMusicPlaying = !isMusicPlaying;
+}
+
+function updateTimer() {
+    const now = new Date();
+    const nextYear = new Date(2026, 0, 1, 0, 0, 0); 
+    const diff = nextYear - now;
+
+    if (diff <= 0) {
+        document.getElementById('timer').innerHTML = "С НОВЫМ ГОДОМ! 🥂";
+        if(document.getElementById('lockMessage')) document.getElementById('lockMessage').innerHTML = "Ура! Открывай! 🎄";
+        return;
+    }
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / (1000 * 60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    document.getElementById('timer').innerHTML = `${d}д ${h}ч ${m}м ${s}с`;
+}
+setInterval(updateTimer, 1000);
+updateTimer();
+
+// Оптимизированный снег
+const canvas = document.getElementById('snowCanvas');
+const ctx = canvas.getContext('2d');
+let width, height, snowflakes;
+
+function initSnow() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    snowflakes = Array.from({ length: window.innerWidth < 500 ? 40 : 80 }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 3 + 1,
+        d: Math.random() * 1
+    }));
+}
+
+function drawSnow() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    snowflakes.forEach(f => {
+        ctx.moveTo(f.x, f.y);
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+    });
+    ctx.fill();
+    snowflakes.forEach(f => {
+        f.y += Math.pow(f.d, 2) + 1;
+        f.x += Math.sin(f.y / 50);
+        if (f.y > height) { f.y = -10; f.x = Math.random() * width; }
+    });
+    requestAnimationFrame(drawSnow);
+}
+
+window.addEventListener('resize', initSnow);
+initSnow();
+drawSnow();
+</script>
+
+</body>
+</html>
